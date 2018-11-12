@@ -52,8 +52,8 @@ r2dbc.inTransaction(handle -> {
 
 //Read values
 r2dbc.inTransaction(handle -> 
-		handle.select("SELECT * FROM sampleTable").mapRow(r -> r.get("sampleColumn", Integer.class)))
-	.subscribe(s -> System.out.println("RECEIVED: " + s));
+	handle.select("SELECT * FROM sampleTable").mapRow(r -> r.get("sampleColumn", Integer.class)))
+		.subscribe(s -> System.out.println("RECEIVED: " + s));
 ```
 
 ## Maven
