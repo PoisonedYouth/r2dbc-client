@@ -10,6 +10,8 @@ This project is an exploration of what a Java API for relational database access
 ## Examples
 A quick example of configuration and execution would look like:
 
+Using postgresql:
+
 ```java
 PostgresqlConnectionConfiguration configuration = PostgresqlConnectionConfiguration.builder()
     .host("<host>")
@@ -28,6 +30,29 @@ r2dbc.inTransaction(handle ->
             .execute(result -> result.map((row, rowMetadata) -> row.get("value", Integer.class)))))
 
     .subscribe(System.out::println);
+```
+
+Using H2:
+```java
+//Connect to H2 database
+H2ConnectionConfiguration configuration = H2ConnectionConfiguration.builder()
+	.url("jdbc:h2:")
+	.file("./testdb")
+	.username("<username>")
+	.password("<password>")
+	.build();
+
+R2dbc r2dbc = new R2dbc(new H2ConnectionFactory(configuration));
+
+//Create table and insert sample data
+r2dbc.inTransaction(handle -> {
+	handle.execute("CREATE TABLE IF NOT EXISTS sampleTable (sampleColumn int)");
+	return handle.execute("INSERT INTO sampleTable VALUES ($1)", 100);
+}).subscribe();
+
+//Read values
+r2dbc.inTransaction(handle -> handle.select("SELECT * FROM sampleTable").mapRow(r -> r.get("sampleColumn", Integer.class)))
+	.subscribe(s -> System.out.println("RECEIVED: " + s));
 ```
 
 ## Maven
